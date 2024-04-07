@@ -14,7 +14,6 @@ def getCity():
         cities.append(
             [node_city_val[0], float(node_city_val[1]), float(node_city_val[2])]
         )
-
     return cities
 
 
@@ -24,11 +23,9 @@ def calcDistance(cities):
     for i in range(len(cities) - 1):
         cityA = cities[i]
         cityB = cities[i + 1]
-
         d = math.sqrt(
             math.pow(cityB[1] - cityA[1], 2) + math.pow(cityB[2] - cityA[2], 2)
         )
-
         total_sum += d
 
     cityA = cities[0]
@@ -42,8 +39,7 @@ def calcDistance(cities):
 
 # selecting the population
 def selectPopulation(cities, size):
-    population = []
-
+    population = [ ]
     for i in range(size):
         c = cities.copy()
         random.shuffle(c)
@@ -56,6 +52,7 @@ def selectPopulation(cities, size):
 
 # the genetic algorithm
 def geneticAlgorithm(
+    iteration_size,
     population,
     lenCities,
     TOURNAMENT_SELECTION_SIZE,
@@ -64,17 +61,15 @@ def geneticAlgorithm(
     TARGET,
 ):
     gen_number = 0
-    for i in range(200):
+    for i in range(iteration_size):
         new_population = []
 
         # selecting two of the best options we have (elitism)
         new_population.append(sorted(population)[0])
         new_population.append(sorted(population)[1])
-
         for i in range(int((len(population) - 2) / 2)):
             # CROSSOVER
-            random_number = random.random()
-            if random_number < CROSSOVER_RATE:
+            if random.random() < CROSSOVER_RATE:
                 parent_chromosome1 = sorted(
                     random.choices(population, k=TOURNAMENT_SELECTION_SIZE)
                 )[0]
@@ -87,12 +82,12 @@ def geneticAlgorithm(
 
                 child_chromosome1 = parent_chromosome1[1][0:point]
                 for j in parent_chromosome2[1]:
-                    if (j in child_chromosome1) == False:
+                    if j not in child_chromosome1:
                         child_chromosome1.append(j)
 
                 child_chromosome2 = parent_chromosome2[1][0:point]
                 for j in parent_chromosome1[1]:
-                    if (j in child_chromosome2) == False:
+                     if j not in child_chromosome2:
                         child_chromosome2.append(j)
 
             # If crossover not happen
@@ -163,10 +158,12 @@ def main():
     MUTATION_RATE = 0.1
     CROSSOVER_RATE = 0.9
     TARGET = 450.0
+    ITERATION_SIZE = 200
 
     cities = getCity()
     firstPopulation, firstFitest = selectPopulation(cities, POPULATION_SIZE)
     answer, genNumber = geneticAlgorithm(
+        ITERATION_SIZE,
         firstPopulation,
         len(cities),
         TOURNAMENT_SELECTION_SIZE,
